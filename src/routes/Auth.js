@@ -1,43 +1,13 @@
+import AuthForm from "components/AuthForm";
 import { authService } from "fbase";
-import { createUserWithEmailAndPassword, GithubAuthProvider, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import React, { useState } from "react";
+import { GithubAuthProvider, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import React from "react";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTwitter, faGoogle, faGithub } from "@fortawesome/free-brands-svg-icons";
 
 //export default () => <span>Auth</span>;
 const Auth = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [newAccount, setNewAccount] = useState(true);
-  const [error, setError] = useState("");
-
-  const onChange = (event) => {
-    const {
-      target: { name, value },
-    } = event;
-    if (name === "email") {
-      setEmail(value);
-    } else if (name === "password") {
-      setPassword(value);
-    }
-  };
-
-  const onSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      let data;
-      if (newAccount) {
-        // 계정생성
-        data = await createUserWithEmailAndPassword(authService, email, password);
-      } else {
-        // 로그인
-        data = await signInWithEmailAndPassword(authService, email, password);
-      }
-      console.log(data);
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  const toggleAccount = () => setNewAccount((prev) => !prev);
   const onSocialClick = async (event) => {
     const {
       target: { name },
@@ -48,24 +18,23 @@ const Auth = () => {
     } else if (name === "github") {
       provider = new GithubAuthProvider();
     }
-    const data = await signInWithPopup(authService, provider);
-    console.log(data);
+    //const data = await signInWithPopup(authService, provider);
+    //console.log(data);
+
+    await signInWithPopup(authService, provider);
   };
   return (
-    <div>
-      <form onSubmit={onSubmit}>
-        <input name="email" type="text" placeholder="email" value={email} onChange={onChange}></input>
-        <input name="password" type="password" placeholder="password" value={password} onChange={onChange}></input>
-        <input type="submit" value={newAccount ? "가입" : "로그인"}></input>
-        {error}
-      </form>
-      <span onClick={toggleAccount}>{newAccount ? "로그인" : "가입"}</span>
-      <div>
-        <button onClick={onSocialClick} name="google">
+    <div className="authContainer">
+      <FontAwesomeIcon icon={faTwitter} color={"#04AAFF"} size="3x" style={{ marginBottom: 30 }} />
+      <AuthForm />
+      <div className="authBtns">
+        <button onClick={onSocialClick} name="google" className="authBtn">
           Google 로그인
+          <FontAwesomeIcon icon={faGoogle} />
         </button>
-        <button onClick={onSocialClick} name="github">
+        <button onClick={onSocialClick} name="github" className="authBtn">
           GitHub 로그인
+          <FontAwesomeIcon icon={faGithub} />
         </button>
       </div>
     </div>
